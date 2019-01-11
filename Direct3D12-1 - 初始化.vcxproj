@@ -43,7 +43,7 @@
     <ProjectGuid>{1AEC00D3-39DF-4602-89D5-377F8B124B64}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Direct3D121初始化</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
