@@ -28,6 +28,16 @@
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Shaders.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy %(Identity) $(OutputPath) &gt; NUL</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">执行自定义生产工具，仅复制，不编译</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">out %(Identity)</Outputs>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</TreatOutputAsContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </CustomBuild>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{1AEC00D3-39DF-4602-89D5-377F8B124B64}</ProjectGuid>
