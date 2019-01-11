@@ -8,6 +8,6 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders.hlsl" />
+    <CustomBuild Include="Shaders.hlsl" />
   </ItemGroup>
 </Project>
