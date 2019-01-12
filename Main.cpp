@@ -16,9 +16,20 @@ class D3D12Application
 	ComPtr<ID3D12Resource> m_renderTargets[FrameCount];
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 	UINT m_rtvDescriptorSize;
+	float m_clearColor[4] = { 0.f,0.f,0.f,1.f };	//±³¾°É«
 
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+	UINT m_vertexCount;
+	//D3D12_PRIMITIVE_TOPOLOGY_TYPE m_priTopoType = 
+	//	D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+	//D3D_PRIMITIVE_TOPOLOGY m_priTopo =
+	//	D3D_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+
+	D3D12_PRIMITIVE_TOPOLOGY_TYPE m_priTopoType =
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	D3D_PRIMITIVE_TOPOLOGY m_priTopo =
+		D3D_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	ComPtr<ID3D12Device> m_device;
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -38,6 +49,14 @@ private:
 	{
 		LoadPipeline();
 		LoadAssets();
+/*
+		SYSTEMTIME sysTime;
+		GetLocalTime(&sysTime);
+		srand(sysTime.wMilliseconds);
+		for (auto &color : m_clearColor)
+		{
+			color = rand() % 256 / 255.f;
+		}*/
 	}
 
 	void LoadPipeline()
@@ -142,7 +161,7 @@ private:
 			psoDesc.DepthStencilState.DepthEnable = FALSE;
 			psoDesc.DepthStencilState.StencilEnable = FALSE;
 			psoDesc.SampleMask = UINT_MAX;
-			psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+			psoDesc.PrimitiveTopologyType = m_priTopoType;
 			psoDesc.NumRenderTargets = 1;
 			psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 			psoDesc.SampleDesc.Count = 1;
@@ -157,12 +176,14 @@ private:
 			float radius = 0.5f;
 			Vertex vertices[] =
 			{
-				{ { radius, radius*m_aspectRatio, 0.f},	{ 1.0f, 0.0f, 0.0f, 1.0f} },
-				{ { -radius, radius*m_aspectRatio, 0.f},	{ 0.0f, 1.0f, 0.0f, 1.0f} },
-				{ { -radius, -radius * m_aspectRatio, 0.f},	{ 0.0f, 0.0f, 1.0f, 1.0f} },
-				{ { radius, -radius * m_aspectRatio, 0},	{ 0.0f, 0.0f, 0.0f, 1.0f} },
-				{ { radius, radius*m_aspectRatio, 0.f},	{ 1.0f, 0.0f, 0.0f, 1.0f} },
+				{ { -radius, radius*m_aspectRatio, 0.f},	{ 0.0f, 1.0f, 0.0f, 1.0f} },	//v1
+				{ { radius, radius*m_aspectRatio, 0.f},		{ 1.0f, 0.0f, 0.0f, 1.0f} },	//v0
+				{ { -radius, -radius*m_aspectRatio, 0.f},	{ 0.0f, 0.0f, 1.0f, 1.0f} },	//v2
+				{ { radius, -radius*m_aspectRatio, 0},		{ 0.0f, 1.0f, 1.0f, 1.0f} },	//v3
+				{ { -radius, -radius*m_aspectRatio, 0.f},	{ 0.0f, 0.0f, 1.0f, 1.0f} },	//v2
+				{ { radius, radius*m_aspectRatio, 0.f},		{ 1.0f, 0.0f, 0.0f, 1.0f} },	//v0
 			};
+			m_vertexCount = _countof(vertices);
 
 			const UINT vertexBufferSize = sizeof(vertices);
 			m_device->CreateCommittedResource(
@@ -219,14 +240,13 @@ private:
 
 		m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = { m_rtvHeap->GetCPUDescriptorHandleForHeapStart().ptr + (m_frameIndex* m_rtvDescriptorSize) };
 		m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-		m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
+		m_commandList->ClearRenderTargetView(rtvHandle, m_clearColor, 0, nullptr);
+		m_commandList->IASetPrimitiveTopology(m_priTopo);
 		m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-		m_commandList->DrawInstanced(5, 1, 0, 0);
+		m_commandList->DrawInstanced(m_vertexCount, 1, 0, 0);
 
 		m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
