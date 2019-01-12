@@ -174,11 +174,12 @@ private:
 		//创建顶点数据
 		{
 			float radius = 0.5f;
+			//顶点的顺序必须是按照顺时针排列
 			Vertex vertices[] =
 			{
-				{ { -radius, radius*m_aspectRatio, 0.f},	{ 0.0f, 1.0f, 0.0f, 1.0f} },	//v1
 				{ { radius, radius*m_aspectRatio, 0.f},		{ 1.0f, 0.0f, 0.0f, 1.0f} },	//v0
 				{ { -radius, -radius*m_aspectRatio, 0.f},	{ 0.0f, 0.0f, 1.0f, 1.0f} },	//v2
+				{ { -radius, radius*m_aspectRatio, 0.f},	{ 0.0f, 1.0f, 0.0f, 1.0f} },	//v1
 				{ { radius, -radius*m_aspectRatio, 0},		{ 0.0f, 1.0f, 1.0f, 1.0f} },	//v3
 				{ { -radius, -radius*m_aspectRatio, 0.f},	{ 0.0f, 0.0f, 1.0f, 1.0f} },	//v2
 				{ { radius, radius*m_aspectRatio, 0.f},		{ 1.0f, 0.0f, 0.0f, 1.0f} },	//v0
