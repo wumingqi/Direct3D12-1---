@@ -299,7 +299,9 @@ private:
 			app->OnRender();
 			break;
 		case WM_DESTROY:
+			app->OnDestroy();
 			PostQuitMessage(0);
+			break;
 		default:
 			return DefWindowProc(hWnd, msg, wParam, lParam);
 		}
