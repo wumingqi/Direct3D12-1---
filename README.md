@@ -1,6 +1,6 @@
 # Direct3D12-1-初始化
-![截图](screenshot.png)
 一些简单的初始化工作
+![截图](screenshot.png)
 1. 窗口创建
 ```
 int __stdcall wWinMain(HISNTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, INT nCmdShow)
